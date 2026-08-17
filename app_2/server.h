@@ -1,19 +1,25 @@
 #pragma once
 
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <cstdint>
+
 #include <arpa/inet.h>
-#include <netinet/in.h>
 
 class Server
 {
 public:
-    void launchSocket();
-    void RunReviewer();
+    explicit Server(std::uint16_t port = 1337);
     ~Server();
 
+    Server(const Server &) = delete;
+    Server &operator=(const Server &) = delete;
+
+    void openSocket();
+    [[nodiscard]] bool receiveAndReview();
+
 private:
-    int data_;
-    int sockfd_;
-    struct sockaddr_in address_{};
+    void closeSocket() noexcept;
+
+    std::uint16_t port_;
+    int socket_ = -1;
+    sockaddr_in address_{};
 };

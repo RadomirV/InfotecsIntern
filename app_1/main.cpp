@@ -1,25 +1,36 @@
 #include "client.h"
+
+#include <cstdint>
+#include <exception>
 #include <iostream>
-#include <thread>
+#include <limits>
+#include <stdexcept>
+#include <string>
 
-int main()
+std::uint16_t parsePort(const std::string &text)
 {
-    Client task;
-    while (true)
+    std::size_t processedCharacters = 0;
+    unsigned long value = std::stoul(text, &processedCharacters);
+    if (processedCharacters != text.size() || value == 0 ||
+        value > std::numeric_limits<std::uint16_t>::max())
     {
-        try
-        {
-            std::thread thread_one(&Client::thread_1, std::ref(task));
-            std::thread thread_two(&Client::thread_2, std::ref(task));
-
-            thread_one.join();
-            thread_two.join();
-        }
-        catch (std::exception &ex)
-        {
-            std::cout << ex.what() << '\n';
-        }
+        throw std::out_of_range("port must be in the range 1..65535");
     }
+    return static_cast<std::uint16_t>(value);
+}
 
-    return 0;
+int main(const int argc, char *argv[])
+{
+    try
+    {
+        const std::string address = argc > 1 ? argv[1] : "127.0.0.1";
+        const std::uint16_t port = argc > 2 ? parsePort(argv[2]) : 1337;
+        Client client(address, port);
+        client.run();
+    }
+    catch (const std::exception &error)
+    {
+        std::cerr << "Client error: " << error.what() << '\n';
+        return 1;
+    }
 }

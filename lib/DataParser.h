@@ -1,12 +1,9 @@
 #pragma once
 #include <string>
 
-#define DATA_API __attribute__((visibility("default")))
-
-class DATA_API DataParser
+namespace dataParser
 {
-public:
-    static void sortAndInsertKB(std::string &str);
-    static unsigned int digitSum(std::string &str);
-    static bool analysis(unsigned int data);
-};
+    void sortAndReplaceEvenDigits(std::string &value);
+    [[nodiscard]] unsigned int calculateDigitSum(const std::string &value);
+    [[nodiscard]] bool isValidSum(unsigned int value) noexcept;
+}

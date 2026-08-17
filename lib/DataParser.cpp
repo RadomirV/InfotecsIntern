@@ -1,33 +1,36 @@
 #include "DataParser.h"
-#include <algorithm>
 
-void DataParser::sortAndInsertKB(std::string &str)
+#include <algorithm>
+#include <cctype>
+
+void dataParser::sortAndReplaceEvenDigits(std::string &value)
 {
-    std::sort(str.begin(), str.end(), std::greater<char>());
-    for (size_t i = 0; i < str.size(); ++i)
+    std::sort(value.begin(), value.end(), std::greater<char>());
+    for (std::size_t index = 0; index < value.size(); ++index)
     {
-        if (std::isdigit(str[i]) && !(str[i] % 2))
+        const auto symbol = static_cast<unsigned char>(value[index]);
+        if (std::isdigit(symbol) != 0 && (value[index] - '0') % 2 == 0)
         {
-            str.replace(i, 1, "KB");
-            ++i;
+            value.replace(index, 1, "KB");
+            ++index;
         }
     }
 }
 
-unsigned int DataParser::digitSum(std::string &str)
+unsigned int dataParser::calculateDigitSum(const std::string &value)
 {
     unsigned int sum = 0;
-    for (auto const &i : str)
+    for (const char symbol : value)
     {
-        if (std::isdigit(i))
+        if (std::isdigit(static_cast<unsigned char>(symbol)) != 0)
         {
-            sum += i - '0';
+            sum += static_cast<unsigned int>(symbol - '0');
         }
     }
     return sum;
 }
 
-bool DataParser::analysis(unsigned int data)
+bool dataParser::isValidSum(const unsigned int value) noexcept
 {
-    return (data >= 100 && (data & 0x1F) == 0);
+    return value >= 100 && value % 32 == 0;
 }
